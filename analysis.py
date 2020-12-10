@@ -31,13 +31,10 @@ b = df.job_id.unique()
 
 
 t_list=[]
-j_id=[]
-w_id=[]
 for i in a:
     temp = df[df["task_id"]==i].values
     t_list.append(temp[1][-1]-temp[0][-1])
-    w_id.append(int(temp[0][-3]))
-    j_id.append(int(temp[0][2]))
+
 j_list=[]
 for i in b:
     temp=df[df["job_id"]==i].values
