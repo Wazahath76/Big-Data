@@ -20,7 +20,7 @@ def worker_message(ind,task):			#we are using sockets to communicate between mas
 		worker=socket.socket(socket.AF_INET,socket.SOCK_STREAM)		
 		worker.connect(("localhost",workers[ind]["port"]))
 		task["status"]="initiating"
-		task["time"]=time.asctime(time.localtime())
+		task["time"]=time.time()
 		task["worker_id"]=workers[ind]["worker_id"]
 		worker.send(json.dumps(task).encode())		#data is stored in a log file 
 		csv_fl=open("log.csv",'a+')
@@ -28,7 +28,7 @@ def worker_message(ind,task):			#we are using sockets to communicate between mas
 		csv_fl.close()
 		workers[ind]["slots"]-=1
 		worker.close()
-		print(f"Task and task id {task['task_id']} is allocated to {task['worker_id']}")
+		print(f"Task and task id {task['task_id']} is allocated to worker_{task['worker_id']} ")
 		
 def RANDOM(job):
 	for j in job["map_tasks"]:
@@ -122,14 +122,15 @@ def contact():
 		data=Socket.recv(1024)
 		task=json.loads(data.decode())
 		global workers
-		task["time"]=time.asctime(time.localtime())
+		start_time=task["time"]
+		task["time"]=time.time()
 		if(task["task_id"].split('_')[1][0]=='M'):
 			comp_map[int(task["job_id"])]-=1
 		workers[int(task["worker_id"])-1]["slots"]+=1
 		csv_fl=open("log.csv",'a+')
 		csv_fl.write(f"{task['task_id']},{task['job_id']},{task['worker_id']},{task['status']},{task['time']}\n")
 		csv_fl.close()
-		print(f"Task and task id {task['task_id']} is completed by {task['worker_id']}")
+		print(f"Task and task id {task['task_id']} is completed by worker_{task['worker_id']} executed in {task['time']-start_time} sec")
 	connectionSocket.close()
 
 req=Thread(target=jobs_req)
