@@ -33,20 +33,15 @@ b = df.job_id.unique()
 t_list=[]
 j_id=[]
 w_id=[]
-
-def twoseconds(ti):
-    dt=datetime.strptime(ti,"%c").timetuple()
-    #print(time.mktime(dt))
-    return time.mktime(dt)
 for i in a:
     temp = df[df["task_id"]==i].values
-    t_list.append((twoseconds(temp[1][-1]))-twoseconds(temp[0][-1]))
+    t_list.append(temp[1][-1]-temp[0][-1])
     w_id.append(int(temp[0][-3]))
     j_id.append(int(temp[0][2]))
 j_list=[]
 for i in b:
     temp=df[df["job_id"]==i].values
-    j_list.append(twoseconds(temp[-1][-1])-twoseconds(temp[0][-1]))
+    j_list.append(temp[1][-1]-temp[0][-1])
 
 
 # In[4]:
@@ -62,12 +57,11 @@ j_median=np.median(np.array(j_list))
 print("median time of job:",j_median)
 
 
-
-# In[5]:
+# In[6]:
 
 
 df1 = df[df["status"]=="initiating"]
-
+df1=df1.drop(columns=['time'])
 df1.plot.bar(stacked=True)
 
 
@@ -79,7 +73,6 @@ df1.plot.bar(stacked=True)
 
 
 # In[ ]:
-
 
 
 
