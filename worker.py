@@ -10,6 +10,7 @@ threads=[]
 def executing(task):				
 	time.sleep(task["duration"])
 	task["status"]="finished"
+	end_message(task)
 		
 def end_message(task):
 	mast_task=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -31,6 +32,14 @@ def contact():
 	Socket.close()
 	
 def thread_execution():
+	process_thread=[]
+	def execute():
+		while 1:
+			if(len(process_thread)>1):
+				temp=process_thread.pop(0)
+				temp.join()
+	execute_thread=Thread(target=execute)
+	execute_thread.start()	
 	while(1):
 		while(len(threads)<1):
 			time.sleep(0.001)		
@@ -38,9 +47,8 @@ def thread_execution():
 		print(f"Task with task id {task['task_id']} is started execution by {task['worker_id']}")
 		process=Thread(target=executing,kwargs=dict(task=task))
 		process.start()
-		process.join()
-		end_message(task)
-
+		process_thread.append(process)
+	execute_thread.join()
 		
 
 con=Thread(target=contact)
